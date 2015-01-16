@@ -107,7 +107,7 @@ sed -i "s@server {.*}@server {
 
         # pass the PHP scripts to php5-fpm
         # Note: .php$ is susceptible to file upload attacks
-        # Consider using: /"location ~ ^/(index|app|app_dev|config).php(/|$) {/"
+        # Consider using: \"location ~ ^/(index|app|app_dev|config).php(/|$) {\"
         location ~ .php$ {
             try_files $uri =404;
             fastcgi_split_path_info ^(.+.php)(/.+)$;
