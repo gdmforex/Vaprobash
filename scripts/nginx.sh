@@ -87,14 +87,14 @@ echo "server {
         # Make site accessible from ...
         server_name ~^(.+)\.lc$;
 
-        set $project_folder $1;
+        set '$project_folder' $1;
 
-        root /var/www/$project_folder/public;
+        root /var/www/'$project_folder'/public;
         index index.html index.htm index.php app.php app_dev.php;
 
 
-        access_log /var/log/nginx/$project_folder-access.log;
-        error_log  /var/log/nginx/$project_folder-error.log error;
+        access_log /var/log/nginx/'$project_folder'-access.log;
+        error_log  /var/log/nginx/'$project_folder'-error.log error;
 
         charset utf-8;
 
