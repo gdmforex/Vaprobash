@@ -75,4 +75,55 @@ if [[ $HHVM_IS_INSTALLED -ne 0 && $PHP_IS_INSTALLED -eq 0 ]]; then
     sudo service php5-fpm restart
 fi
 
+# custom config
+sudo rm -R /etc/nginx/sites-available/vagrant
+
+sed -i "s@server {.*}@server {
+        listen 80;
+        listen 443;
+
+        # Make site accessible from ...
+        server_name ~^(.+)\.lc$;
+
+        set $project_folder $1;
+
+        root /var/www/$project_folder/public;
+        index index.html index.htm index.php app.php app_dev.php;
+
+
+        access_log /var/log/nginx/$project_folder-access.log;
+        error_log  /var/log/nginx/$project_folder-error.log error;
+
+        charset utf-8;
+
+        location / {
+            try_files $uri $uri/ /app.php?$query_string /index.php?$query_string;
+        }
+
+        location = /favicon.ico { log_not_found off; access_log off; }
+        location = /robots.txt  { access_log off; log_not_found off; }
+
+        error_page 404 /index.php;
+
+        # pass the PHP scripts to php5-fpm
+        # Note: .php$ is susceptible to file upload attacks
+        # Consider using: /"location ~ ^/(index|app|app_dev|config).php(/|$) {/"
+        location ~ .php$ {
+            try_files $uri =404;
+            fastcgi_split_path_info ^(.+.php)(/.+)$;
+            # With php5-fpm:
+            fastcgi_pass 127.0.0.1:9000;
+            fastcgi_index index.php;
+            include fastcgi_params;
+            fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+            fastcgi_param LARA_ENV dev; # Environment variable for Laravel
+            fastcgi_param HTTPS off;
+        }
+
+        # Deny .htaccess file access
+        location ~ /\.ht {
+            deny all;
+        }
+    }" /etc/nginx/sites-available/vagrant
+
 sudo service nginx restart

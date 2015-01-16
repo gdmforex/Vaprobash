@@ -2,9 +2,9 @@
 # vi: set ft=ruby :
 
 # Config Github Settings
-github_username = "fideloper"
+github_username = "gdmforex"
 github_repo     = "Vaprobash"
-github_branch   = "1.3.1"
+github_branch   = "master"
 github_url      = "https://raw.githubusercontent.com/#{github_username}/#{github_repo}/#{github_branch}"
 
 # Server Configuration
