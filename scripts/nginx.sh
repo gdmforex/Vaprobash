@@ -78,7 +78,9 @@ fi
 # custom config
 sudo rm -R /etc/nginx/sites-available/vagrant
 
-sed -i "s@server {.*}@server {
+sudo su
+
+echo "server {
         listen 80;
         listen 443;
 
@@ -124,6 +126,9 @@ sed -i "s@server {.*}@server {
         location ~ /\.ht {
             deny all;
         }
-    }" /etc/nginx/sites-available/vagrant
+    }" >>  /etc/nginx/sites-available/vagrant
+
+    exit
+
 
 sudo service nginx restart
