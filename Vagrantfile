@@ -4,7 +4,7 @@
 # Config Github Settings
 github_username = "gdmforex"
 github_repo     = "Vaprobash"
-github_branch   = "master"
+github_branch   = "scripts-edit"
 github_url      = "https://raw.githubusercontent.com/#{github_username}/#{github_repo}/#{github_branch}"
 
 # Server Configuration
