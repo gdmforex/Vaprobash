@@ -20,7 +20,7 @@ hostname        = "vaprobash.dev"
 server_ip             = "192.168.22.10"
 server_cpus           = "1"   # Cores
 server_memory         = "384" # MB
-server_swap           = "768" # Options: false | int (MB) - Guideline: Between one or two times the server_memory
+server_swap           = "1024" # Options: false | int (MB) - Guideline: Between one or two times the server_memory
 
 # UTC        for Universal Coordinated Time
 # EST        for Eastern Standard Time
