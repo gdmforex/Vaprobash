@@ -1,7 +1,9 @@
 .DS_Store
 notes.md
-.vagrant
 play
-laravel/
+*/
+!scripts
+!helpers
+Vagrantfile
 # editor backup files
 *~
