@@ -128,6 +128,7 @@ echo "server {
         }
     }" >>  /etc/nginx/sites-available/vagrant
 
+    mkdir /var/log/nginx
     chmod 777 /var/log/nginx
 
     exit
