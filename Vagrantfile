@@ -99,16 +99,16 @@ Vagrant.configure("2") do |config|
   # Create a static IP
   config.vm.network :private_network, ip: server_ip
 
-  # Use NFS for the shared folder
+  # Use rsync for the shared folder
   config.vm.synced_folder ".", "/var/www",
             id: "core",
-            :nfs => true,
-            :mount_options => ['nolock,vers=3,udp,noatime']
+            type: "rsync",
+            rsync__exclude: ".git/ */.git/"
 
   # If using VirtualBox
   config.vm.provider :virtualbox do |vb|
 
-    vb.name = "Vaprobash1"
+    vb.name = "Vaprobash"
 
     # Set server cpus
     vb.customize ["modifyvm", :id, "--cpus", server_cpus]
@@ -144,8 +144,8 @@ Vagrant.configure("2") do |config|
     config.cache.scope = :box
 
     config.cache.synced_folder_opts = {
-        type: :nfs,
-        mount_options: ['rw', 'vers=3', 'tcp', 'nolock']
+        type: "rsync",
+        rsync__exclude: ".git/ */.git/"
     }
   end
 
