@@ -32,6 +32,7 @@ sudo sed -i "s/#listen_addresses = 'localhost'/listen_addresses = '*'/g" /etc/po
 # Identify users via "md5", rather than "ident", allowing us
 # to make PG users separate from system users. "md5" lets us
 # simply use a password
+echo "local   all             all             trust" | sudo tee -a /etc/postgresql/$POSTGRE_VERSION/main/pg_hba.conf
 echo "host    all             all             0.0.0.0/0               md5" | sudo tee -a /etc/postgresql/$POSTGRE_VERSION/main/pg_hba.conf
 sudo service postgresql start
 
@@ -40,7 +41,7 @@ sudo -u postgres createuser -s vagrant
 
 # Create new user "root" w/ defined password
 # Not a superuser, just tied to new db "vagrant"
-sudo -u postgres psql -c "CREATE ROLE root LOGIN UNENCRYPTED PASSWORD '$1' NOSUPERUSER INHERIT NOCREATEDB NOCREATEROLE NOREPLICATION;"
+sudo -u postgres psql -c "CREATE ROLE vagrant LOGIN UNENCRYPTED PASSWORD '$1' INHERIT;"
 
 # Make sure changes are reflected by restarting
 sudo service postgresql restart
