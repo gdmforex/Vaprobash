@@ -176,7 +176,7 @@ Vagrant.configure("2") do |config|
   # config.vm.provision "shell", path: "#{github_url}/scripts/mssql.sh"
 
   # Provision Vim
-   config.vm.provision "shell", path: "#{github_url}/scripts/vim.sh", args: github_url
+  # config.vm.provision "shell", path: "#{github_url}/scripts/vim.sh", args: github_url
 
   # Provision Docker
   # config.vm.provision "shell", path: "#{github_url}/scripts/docker.sh"
