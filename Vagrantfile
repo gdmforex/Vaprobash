@@ -29,9 +29,9 @@ server_swap           = "1024" # Options: false | int (MB) - Guideline: Between 
 server_timezone  = "UTC"
 
 # Database Configuration
-mysql_root_password   = "root"   # We'll assume user "root"
-mysql_version         = "5.5"    # Options: 5.5 | 5.6
-mysql_enable_remote   = "false"  # remote access enabled when true
+mysql_root_password   = "vagrant"   # We'll assume user "root"
+mysql_version         = "5.6"    # Options: 5.5 | 5.6
+mysql_enable_remote   = "true"  # remote access enabled when true
 pgsql_root_password   = "vagrant"   # We'll assume user "root"
 mongo_enable_remote   = "false"  # remote access enabled when true
 
