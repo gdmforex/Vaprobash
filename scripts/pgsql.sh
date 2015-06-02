@@ -41,7 +41,7 @@ sudo service postgresql start
 
 # Create new user "root" w/ defined password
 # Not a superuser, just tied to new db "vagrant"
-sudo -u postgres psql -c "CREATE USER vagrant SUPERUSER PASSWORD '$1';"
+sudo -u postgres psql -c "CREATE ROLE vagrant SUPERUSER PASSWORD '$1';"
 
 # Make sure changes are reflected by restarting
 sudo service postgresql restart
