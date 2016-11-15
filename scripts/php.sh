@@ -46,7 +46,7 @@ else
         sudo apt-key update
         sudo apt-get update
 
-        sudo apt-get install -qq php7.0-cli php7.0-fpm php7.0-mysql php7.0-pgsql php7.0 php7.0-curl php7.0-gd php7.0-gmp php7.0-json php7.0-opcache php7.0-mcrypt php7.0-intl
+        sudo apt-get install -qq php7.0-cli php7.0-fpm php7.0-mysql php7.0-pgsql php7.0 php7.0-curl php7.0-gd php7.0-gmp php7.0-json php7.0-opcache php7.0-mcrypt php7.0-intl php7.0-xml
     else
 
         if [ $PHP_VERSION == "5.5" ]; then

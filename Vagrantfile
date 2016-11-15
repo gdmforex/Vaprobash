@@ -58,10 +58,10 @@ hhvm                  = "false"
 
 # PHP Options
 composer_packages     = [        # List any global Composer packages that you want to install
-  "phpunit/phpunit:4.0.*",
+  "phpunit/phpunit:5.6.*",
   "codeception/codeception=*",
-  "phpspec/phpspec:2.0.*@dev",
-  "squizlabs/php_codesniffer:1.5.*",
+  "phpspec/phpspec:3.1.*@dev",
+  #"squizlabs/php_codesniffer:1.5.*",
 ]
 
 # Default web server document root
