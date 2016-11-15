@@ -16,5 +16,5 @@ echo "" | sudo pecl install zmq-beta > /dev/null
 
 sudo echo "extension=zmq.so" >> /etc/php5/mods-available/zmq.ini
 sudo php5enmod zmq > /dev/null
-sudo service php5-fpm restart > /dev/null
+#sudo service php5-fpm restart > /dev/null
 
