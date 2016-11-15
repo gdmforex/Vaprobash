@@ -2,10 +2,14 @@
 # vi: set ft=ruby :
 
 # Config Github Settings
-github_username = "gdmforex"
+github_username = "fideloper"
 github_repo     = "Vaprobash"
-github_branch   = "scripts-edit"
+github_branch   = "1.4.2"
 github_url      = "https://raw.githubusercontent.com/#{github_username}/#{github_repo}/#{github_branch}"
+
+# Because this:https://developer.github.com/changes/2014-12-08-removing-authorizations-token/
+# https://github.com/settings/tokens
+github_pat          = ""
 
 # Server Configuration
 
@@ -19,31 +23,35 @@ hostname        = "vaprobash.dev"
 #   192.168.0.1 - 192.168.255.254
 server_ip             = "192.168.22.10"
 server_cpus           = "1"   # Cores
-server_memory         = "1024" # MB
-server_swap           = "1024" # Options: false | int (MB) - Guideline: Between one or two times the server_memory
+server_memory         = "384" # MB
+server_swap           = "768" # Options: false | int (MB) - Guideline: Between one or two times the server_memory
 
 # UTC        for Universal Coordinated Time
 # EST        for Eastern Standard Time
+# CET        for Central European Time
 # US/Central for American Central
 # US/Eastern for American Eastern
 server_timezone  = "UTC"
 
 # Database Configuration
-mysql_root_password   = "vagrant"   # We'll assume user "root"
+mysql_root_password   = "root"   # We'll assume user "root"
 mysql_version         = "5.6"    # Options: 5.5 | 5.6
-mysql_enable_remote   = "true"  # remote access enabled when true
-pgsql_root_password   = "vagrant"   # We'll assume user "root"
+mysql_enable_remote   = "false"  # remote access enabled when true
+pgsql_root_password   = "root"   # We'll assume user "root"
+mongo_version         = "2.6"    # Options: 2.6 | 3.0
 mongo_enable_remote   = "false"  # remote access enabled when true
 
 # Languages and Packages
 php_timezone          = "UTC"    # http://php.net/manual/en/timezones.php
-php_version           = "5.6"    # Options: 5.5 | 5.6
+php_version           = "7"    # Options: 5.5 | 5.6 | 7
 ruby_version          = "latest" # Choose what ruby version should be installed (will also be the default version)
 ruby_gems             = [        # List any Ruby Gems that you want to install
   #"jekyll",
   #"sass",
   #"compass",
 ]
+
+go_version            = "latest" # Example: go1.4 (latest equals the latest stable version)
 
 # To install HHVM instead of PHP, set this to "true"
 hhvm                  = "false"
@@ -59,22 +67,27 @@ composer_packages     = [        # List any global Composer packages that you wa
 # Default web server document root
 # Symfony's public directory is assumed "web"
 # Laravel's public directory is assumed "public"
-public_folder         = "/var/www"
+public_folder         = "/vagrant"
 
-laravel_root_folder   = "/var/www/laravel" # Where to install Laravel. Will `composer install` if a composer.json file exists
+laravel_root_folder   = "/vagrant/laravel" # Where to install Laravel. Will `composer install` if a composer.json file exists
 laravel_version       = "latest-stable" # If you need a specific version of Laravel, set it here
-symfony_root_folder   = "/var/www/symfony" # Where to install Symfony.
+symfony_root_folder   = "/vagrant/symfony" # Where to install Symfony.
 
 nodejs_version        = "latest"   # By default "latest" will equal the latest stable version
 nodejs_packages       = [          # List any global NodeJS packages that you want to install
   #"grunt-cli",
-  "gulp",
-  "bower",
+  #"gulp",
+  #"bower",
   #"yo",
 ]
 
+# RabbitMQ settings
+rabbitmq_user = "user"
+rabbitmq_password = "password"
+
 sphinxsearch_version  = "rel22" # rel20, rel21, rel22, beta, daily, stable
 
+elasticsearch_version = "2.3.1" # 5.0.0-alpha1, 2.3.1, 2.2.2, 2.1.2, 1.7.5
 
 Vagrant.configure("2") do |config|
 
@@ -97,15 +110,28 @@ Vagrant.configure("2") do |config|
   config.vm.hostname = hostname
 
   # Create a static IP
-  config.vm.network :private_network, ip: server_ip
+  if Vagrant.has_plugin?("vagrant-auto_network")
+    config.vm.network :private_network, :ip => "0.0.0.0", :auto_network => true
+  else
+    config.vm.network :private_network, ip: server_ip
+    config.vm.network :forwarded_port, guest: 80, host: 8000
+  end
+
+  # Enable agent forwarding over SSH connections
+  config.ssh.forward_agent = true
 
   # Use NFS for the shared folder
   config.vm.synced_folder ".", "/var/www"
 
+  # Replicate local .gitconfig file if it exists
+  if File.file?(File.expand_path("~/.gitconfig"))
+    config.vm.provision "file", source: "~/.gitconfig", destination: ".gitconfig"
+  end
+
   # If using VirtualBox
   config.vm.provider :virtualbox do |vb|
 
-    vb.name = "Vaprobash1"
+    vb.name = hostname
 
     # Set server cpus
     vb.customize ["modifyvm", :id, "--cpus", server_cpus]
@@ -140,21 +166,19 @@ Vagrant.configure("2") do |config|
     # Usage docs: http://fgrehm.viewdocs.io/vagrant-cachier/usage
     config.cache.scope = :box
 
-    config.cache.synced_folder_opts = {
-        type: :nfs,
-        mount_options: ['rw', 'vers=3', 'tcp', 'nolock']
-    }
+
   end
 
   # Adding vagrant-digitalocean provider - https://github.com/smdahlen/vagrant-digitalocean
   # Needs to ensure that the vagrant plugin is installed
   config.vm.provider :digital_ocean do |provider, override|
     override.ssh.private_key_path = '~/.ssh/id_rsa'
+    override.ssh.username = 'vagrant'
     override.vm.box = 'digital_ocean'
     override.vm.box_url = "https://github.com/smdahlen/vagrant-digitalocean/raw/master/box/digital_ocean.box"
 
     provider.token = 'YOUR TOKEN'
-    provider.image = 'Ubuntu 14.04 x64'
+    provider.image = 'ubuntu-14-04-x64'
     provider.region = 'nyc2'
     provider.size = '512mb'
   end
@@ -179,8 +203,7 @@ Vagrant.configure("2") do |config|
   # config.vm.provision "shell", path: "#{github_url}/scripts/vim.sh", args: github_url
 
   # Provision Docker
-  # config.vm.provision "shell", path: "#{github_url}/scripts/docker.sh"
-
+  # config.vm.provision "shell", path: "#{github_url}/scripts/docker.sh", args: "permissions"
 
   ####
   # Web Servers
@@ -198,7 +221,7 @@ Vagrant.configure("2") do |config|
   ##########
 
   # Provision MySQL
-   config.vm.provision "shell", path: "#{github_url}/scripts/mysql.sh", args: [mysql_root_password, mysql_version, mysql_enable_remote]
+  # config.vm.provision "shell", path: "#{github_url}/scripts/mysql.sh", args: [mysql_root_password, mysql_version, mysql_enable_remote]
 
   # Provision PostgreSQL
    config.vm.provision "shell", path: "#{github_url}/scripts/pgsql.sh", args: pgsql_root_password
@@ -216,17 +239,20 @@ Vagrant.configure("2") do |config|
   # config.vm.provision "shell", path: "#{github_url}/scripts/couchdb.sh"
 
   # Provision MongoDB
-  # config.vm.provision "shell", path: "#{github_url}/scripts/mongodb.sh", args: mongo_enable_remote
+  # config.vm.provision "shell", path: "#{github_url}/scripts/mongodb.sh", args: [mongo_enable_remote, mongo_version]
 
   # Provision MariaDB
   # config.vm.provision "shell", path: "#{github_url}/scripts/mariadb.sh", args: [mysql_root_password, mysql_enable_remote]
+
+  # Provision Neo4J
+  # config.vm.provision "shell", path: "#{github_url}/scripts/neo4j.sh"
 
   ####
   # Search Servers
   ##########
 
   # Install Elasticsearch
-  # config.vm.provision "shell", path: "#{github_url}/scripts/elasticsearch.sh"
+   config.vm.provision "shell", path: "#{github_url}/scripts/elasticsearch.sh", args: [elasticsearch_version]
 
   # Install SphinxSearch
   # config.vm.provision "shell", path: "#{github_url}/scripts/sphinxsearch.sh", args: [sphinxsearch_version]
@@ -238,7 +264,7 @@ Vagrant.configure("2") do |config|
   # Install ElasticHQ
   # Admin for: Elasticsearch
   # Works on: Apache2, Nginx
-  # config.vm.provision "shell", path: "#{github_url}/scripts/elastichq.sh"
+   config.vm.provision "shell", path: "#{github_url}/scripts/elastichq.sh"
 
 
   ####
@@ -249,7 +275,7 @@ Vagrant.configure("2") do |config|
   # config.vm.provision "shell", path: "#{github_url}/scripts/memcached.sh"
 
   # Provision Redis (without journaling and persistence)
-   config.vm.provision "shell", path: "#{github_url}/scripts/redis.sh"
+  # config.vm.provision "shell", path: "#{github_url}/scripts/redis.sh"
 
   # Provision Redis (with journaling and persistence)
   # config.vm.provision "shell", path: "#{github_url}/scripts/redis.sh", args: "persistent"
@@ -269,8 +295,14 @@ Vagrant.configure("2") do |config|
   # Install Supervisord
   # config.vm.provision "shell", path: "#{github_url}/scripts/supervisord.sh"
 
+  # Install Kibana
+  # config.vm.provision "shell", path: "#{github_url}/scripts/kibana.sh"
+
   # Install ØMQ
   # config.vm.provision "shell", path: "#{github_url}/scripts/zeromq.sh"
+
+  # Install RabbitMQ
+  config.vm.provision "shell", path: "#{github_url}/scripts/rabbitmq.sh", args: [rabbitmq_user, rabbitmq_password]
 
   ####
   # Additional Languages
@@ -282,18 +314,22 @@ Vagrant.configure("2") do |config|
   # Install Ruby Version Manager (RVM)
   # config.vm.provision "shell", path: "#{github_url}/scripts/rvm.sh", privileged: false, args: ruby_gems.unshift(ruby_version)
 
+  # Install Go Version Manager (GVM)
+  # config.vm.provision "shell", path: "#{github_url}/scripts/go.sh", privileged: false, args: [go_version]
+
   ####
   # Frameworks and Tooling
   ##########
 
   # Provision Composer
-   config.vm.provision "shell", path: "#{github_url}/scripts/composer.sh", privileged: false, args: composer_packages.join(" ")
+  # You may pass a github auth token as the first argument
+   config.vm.provision "shell", path: "#{github_url}/scripts/composer.sh", privileged: false, args: [github_pat, composer_packages.join(" ")]
 
   # Provision Laravel
   # config.vm.provision "shell", path: "#{github_url}/scripts/laravel.sh", privileged: false, args: [server_ip, laravel_root_folder, public_folder, laravel_version]
 
   # Provision Symfony
-  # config.vm.provision "shell", path: "#{github_url}/scripts/symfony.sh", privileged: false, args: [server_ip, symfony_root_folder, public_folder]
+   config.vm.provision "shell", path: "#{github_url}/scripts/symfony.sh", privileged: false, args: [server_ip, symfony_root_folder, public_folder]
 
   # Install Screen
   # config.vm.provision "shell", path: "#{github_url}/scripts/screen.sh"
@@ -305,7 +341,10 @@ Vagrant.configure("2") do |config|
   # config.vm.provision "shell", path: "#{github_url}/scripts/git-ftp.sh", privileged: false
 
   # Install Ansible
-   config.vm.provision "shell", path: "#{github_url}/scripts/ansible.sh"
+  # config.vm.provision "shell", path: "#{github_url}/scripts/ansible.sh"
+
+  # Install Android
+  # config.vm.provision "shell", path: "#{github_url}/scripts/android.sh"
 
   ####
   # Local Scripts
