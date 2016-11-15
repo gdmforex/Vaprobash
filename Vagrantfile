@@ -329,7 +329,7 @@ Vagrant.configure("2") do |config|
   # config.vm.provision "shell", path: "./scripts/laravel.sh", privileged: false, args: [server_ip, laravel_root_folder, public_folder, laravel_version]
 
   # Provision Symfony
-   config.vm.provision "shell", path: "./scripts/symfony.sh", privileged: false, args: [server_ip, symfony_root_folder, public_folder]
+  # config.vm.provision "shell", path: "./scripts/symfony.sh", privileged: false, args: [server_ip, symfony_root_folder, public_folder]
 
   # Install Screen
   # config.vm.provision "shell", path: "./scripts/screen.sh"
