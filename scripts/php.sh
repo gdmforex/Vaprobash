@@ -30,15 +30,17 @@ if [[ $HHVM == "true" ]]; then
     sudo service hhvm restart
 else
     echo ">>> Installing PHP $PHP_VERSION"
-    if [ $PHP_VERSION == "7" ]; then
+    if [ $PHP_VERSION == "7.0" ]; then
         PHP_PATH="php/7.0"
+        PHP_EXEC_VERSION="7.0"
     else
         PHP_PATH="php5"
+        PHP_EXEC_VERSION="5"
     fi
 
     sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 4F4EA0AAE5267A6C
 
-    if [ $PHP_VERSION == "7" ]; then
+    if [ $PHP_VERSION == "7.0" ]; then
         sudo add-apt-repository ppa:ondrej/php
 
         sudo apt-key update
@@ -103,10 +105,6 @@ EOF
         sudo sed -i "s/;date.timezone =.*/date.timezone = ${PHP_TIMEZONE/\//\\/}/" /etc/${PHP_PATH}/fpm/php.ini
         sudo sed -i "s/;date.timezone =.*/date.timezone = ${PHP_TIMEZONE/\//\\/}/" /etc/${PHP_PATH}/cli/php.ini
 
-    if [ PHP_VERSION == "7" ]; then
-        sudo service php7.0-fpm restart
-    else
-        sudo service php5-fpm restart
-    fi
+        sudo service php${PHP_EXEC_VERSION}-fpm restart
 
 fi
