@@ -31,7 +31,7 @@ if [[ $HHVM == "true" ]]; then
 else
     echo ">>> Installing PHP $PHP_VERSION"
     if [ $PHP_VERSION == "7" ]; then
-        PHP_PATH="php/7"
+        PHP_PATH="php/7.0"
     else
         PHP_PATH="php5"
     fi

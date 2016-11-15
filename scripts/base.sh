@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-sudo apt-get --clear-avail
-sudo apt-get update
 sudo dpkg --configure -a
 echo "Setting Timezone & Locale to $3 & en_US.UTF-8"
 
