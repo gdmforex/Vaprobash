@@ -36,7 +36,7 @@ echo "host    all             all             0.0.0.0/0               md5" | sud
 sudo service postgresql start
 
 # Create new superuser "vagrant"
-sudo -u postgres createuser -s vagrant
+sudo -u postgres psql -c "CREATE ROLE vagrant LOGIN UNENCRYPTED PASSWORD 'vagrant' NOSUPERUSER INHERIT NOCREATEDB NOCREATEROLE NOREPLICATION;"
 
 # Create new user "root" w/ defined password
 # Not a superuser, just tied to new db "vagrant"
