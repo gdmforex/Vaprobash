@@ -57,7 +57,7 @@ nodejs_packages       = [          # List any global NodeJS packages that you wa
 rabbitmq_user = "user"
 rabbitmq_password = "password"
 
-elasticsearch_version = "2.3.1" # 5.0.0-alpha1, 2.3.1, 2.2.2, 2.1.2, 1.7.5
+elasticsearch_version = "5.0.1" # 5.0.1, 2.3.1, 2.2.2, 2.1.2, 1.7.5
 
 Vagrant.configure("2") do |config|
 
@@ -91,7 +91,7 @@ Vagrant.configure("2") do |config|
   config.ssh.forward_agent = true
 
   # Use NFS for the shared folder
-  config.vm.synced_folder ".", "/var/www"
+  config.vm.synced_folder ".", "/var/www" #, type: "rsync", rsync__exclude: ".git/", rsync__auto: "true"
 
   # Replicate local .gitconfig file if it exists
   if File.file?(File.expand_path("~/.gitconfig"))
@@ -238,6 +238,6 @@ Vagrant.configure("2") do |config|
   # Any local scripts you may want to run post-provisioning.
   # Add these to the same directory as the Vagrantfile.
   ##########
-   config.vm.provision "shell", path: "./crm-setup.sh"
+  # config.vm.provision "shell", path: "./crm-setup.sh"
 
 end

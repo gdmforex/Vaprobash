@@ -10,7 +10,7 @@ ELASTICSEARCH_VERSION=$1 # Check https://www.elastic.co/downloads/elasticsearch 
 sudo apt-get update
 sudo apt-get install -qq openjdk-7-jre-headless
 
-wget --quiet https://download.elastic.co/elasticsearch/elasticsearch/elasticsearch-$ELASTICSEARCH_VERSION.deb
+wget --quiet https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-${ELASTICSEARCH_VERSION}.deb
 sudo dpkg -i elasticsearch-$ELASTICSEARCH_VERSION.deb
 rm elasticsearch-$ELASTICSEARCH_VERSION.deb
 
