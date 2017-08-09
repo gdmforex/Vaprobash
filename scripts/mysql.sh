@@ -14,7 +14,7 @@ if [ $2 == "5.6" ]; then
 	sudo apt-get update
 
 	# Change package
-	mysql_package=mysql-server-5.6
+	#mysql_package=mysql-server-5.6
 fi
 
 # Install MySQL without password prompt
